@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>WebOTP Test Page</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>div {font-family: sans-serif;}</style>
+  </head>
+  <body>
+    <h1>
+      WebOTP Test Page
+    </h1>
+    <h3 id="hostname"></h3>
+    <div>
+      Send an SMS that includes <pre><code>@ #12345</code></pre> to this phone.
+    </div>
+    <div style="border:1px solid; padding: 5px; 10px; margin: 10px 0;">
+      <form action="/">
+        Enter OTP here:
+        <input type="text" autocomplete="one-time-code" inputmode="numeric" />
+      </form>
+    </div>
+    <script>
+    document.getElementById("hostname").innerHTML =
+        "The hostname of this page is:<br>" + window.location.hostname;
+
+    if ('OTPCredential' in window) {
+      window.addEventListener('DOMContentLoaded', e => {
+        const input = document.querySelector('input[autocomplete="one-time-code"]');
+        if (!input) return;
+        const ac = new AbortController();
+        const form = input.closest('form');
+        if (form) {
+          form.addEventListener('submit', e => {
+            ac.abort();
+          });
+        }
+        navigator.credentials.get({
+          otp: { transport:['sms'] },
+          signal: ac.signal
+        }).then(otp => {
+          input.value = otp.code;
+          if (form) form.submit();
+        }).catch(err => {
+          console.log(err);
+        });
+      });
+    }
+    </script>
+  </body>
+</html>
