@@ -45,7 +45,6 @@
           signal: ac.signal
         }).then(otp => {
           input.value = otp.code;
-          alert("OTP filled!");
         //  if (form) form.submit();
         }).catch(err => {
           console.log(err);
