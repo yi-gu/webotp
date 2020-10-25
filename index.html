@@ -11,9 +11,8 @@
       WebOTP Test Page
     </h1>
     <h3 id="hostname"></h3>
-    <div>
-      Send an SMS that includes <pre><code>@ #12345</code></pre> to this phone.
-    </div>
+    <pre id="message">
+    </pre>
     <div style="border:1px solid; padding: 5px; 10px; margin: 10px 0;">
       <form action="/">
         Enter OTP here:
@@ -23,24 +22,31 @@
     <script>
     document.getElementById("hostname").innerHTML =
         "The hostname of this page is:<br>" + window.location.hostname;
+    var is_iframe = (document.referrer != "");
+    var top_host = is_iframe ? new URL(document.referrer).hostname : "";
+    document.getElementById("message").innerHTML =
+        "Sample SMS:\n\nYour OTP is: 123456.\n" +
+        (is_iframe ? "@" + top_host + " #123456 @" + window.location.hostname :
+        "@" + window.location.hostname + " #123456");
 
     if ('OTPCredential' in window) {
       window.addEventListener('DOMContentLoaded', e => {
         const input = document.querySelector('input[autocomplete="one-time-code"]');
         if (!input) return;
         const ac = new AbortController();
-        const form = input.closest('form');
-        if (form) {
-          form.addEventListener('submit', e => {
-            ac.abort();
-          });
-        }
+        // const form = input.closest('form');
+        // if (form) {
+        //   form.addEventListener('submit', e => {
+        //     ac.abort();
+        //   });
+        // }
         navigator.credentials.get({
           otp: { transport:['sms'] },
           signal: ac.signal
         }).then(otp => {
           input.value = otp.code;
-          if (form) form.submit();
+          alert("OTP filled!");
+        //  if (form) form.submit();
         }).catch(err => {
           console.log(err);
         });
