@@ -1,0 +1,47 @@
+<style>
+.button {
+  background-color: green;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  display: inline-block;
+  font-size: 16px;
+  position: absolute;
+  left: 10px;
+  top: 300px;
+}
+
+body {
+  background: white;
+}
+</style>
+
+<img src="./background.png"></img>
+<input type="button" class="button" value="Tap to receive email" onclick="showEmail()" />
+
+<img id="email" style="display: none; position:fixed; top: 120px; left: 260px;"
+src="./email.png"></img>
+
+<script>
+
+
+function fakeCredential() {
+  let credential = new PasswordCredential({
+    id: "example-username",
+    name: "John Doe",
+    password: "password"
+  });
+
+  navigator.credentials.store(credential).then(() => {
+    console.info("Credential stored in the user agent's credential manager.");
+  }, (err) => {
+    console.error("Error while storing the credential: ", err);
+  });
+}
+
+function showEmail() {
+  document.getElementById('email').style.display = "block";
+  setTimeout(fakeCredential, 2000);
+}
+</script>
